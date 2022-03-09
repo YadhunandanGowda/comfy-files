@@ -1,13 +1,65 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
-import { Link } from 'react-router-dom'
-import { FaCheck } from 'react-icons/fa'
-import { useCartContext } from '../context/cart_context'
-import AmountButtons from './AmountButtons'
+import React, { useState } from "react";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+import { FaCheck } from "react-icons/fa";
+import { useCartContext } from "../context/cart_context";
+import AmountButtons from "./AmountButtons";
 
-const AddToCart = () => {
-  return <h4>addToCart </h4>
-}
+const AddToCart = ({ product }) => {
+  const { addToCart } = useCartContext();
+  const { id, stock, colors } = product;
+
+  const [mainColor, setMainColor] = useState(colors[0]);
+  const [unit, setUnit] = useState(1);
+
+  const increase = () => {
+    if (unit < stock) {
+      setUnit(unit + 1);
+    }
+  };
+  const decrease = () => {
+    if (unit > 1) {
+      setUnit(unit - 1);
+    }
+  };
+  return (
+    <Wrapper>
+      <div className="colors">
+        <span>Colors:</span>
+        <div>
+          {colors.map((color, index) => {
+            return (
+              <button
+                className={
+                  mainColor === color ? "color-btn active" : "color-btn"
+                }
+                style={{ background: color }}
+                key={index}
+                onClick={() => {
+                  setMainColor(color);
+                }}
+              >
+                {mainColor === color ? <FaCheck /> : ""}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div className="btn-container">
+        <AmountButtons unit={unit} increase={increase} decrease={decrease} />
+        <Link
+          to="/cart"
+          className="btn"
+          onClick={(e) => {
+            addToCart(id, mainColor, unit, product);
+          }}
+        >
+          add to Cart
+        </Link>
+      </div>
+    </Wrapper>
+  );
+};
 
 const Wrapper = styled.section`
   margin-top: 2rem;
@@ -53,5 +105,5 @@ const Wrapper = styled.section`
     margin-top: 1rem;
     width: 140px;
   }
-`
-export default AddToCart
+`;
+export default AddToCart;
